@@ -5,28 +5,39 @@
 Mover m;
 float r1,r2;
 PShape c1,c2;
-
-
+PVector[] f=new PVector[4];
+int [] lst={1,2,3,4,5,6,7,8,9,10,12};
+color cl1=color(255,0,0),cl2=color(255,255,0),cl3=color(0,0,0);
 void setup() {
   size(375, 667);
   rectMode(CENTER);
   //randomSeed(1);
   m= new Mover(2, width/2, 35);
-  c1 = createShape(ELLIPSE,width-height/15,height/2,height/15,height/15);
-  c1.setFill(color(255,0,0));
-  c2 = createShape(ELLIPSE,height/15,height/2,height/15,height/15);
-  c2.setFill(color(255,255,0));
   
+  c1 = createShape(ELLIPSE,width-height/15,height/2,height/15,height/15);
+  c1.setFill(cl3);
+  c1.setStroke(cl1);
+  c2 = createShape(ELLIPSE,height/15,height/2,height/15,height/15);
+  c2.setFill(cl3);
+  c2.setStroke(cl2);
+  
+  f[0]=PVector.fromAngle(-PI/2);
+  f[1]=PVector.fromAngle(PI);
+  f[2]=PVector.fromAngle(PI/2);
+  f[3]=PVector.fromAngle(0);
 }
-/*void keyPressed(){
-  switch(key)
-       {
-          case UP:println("U",(-PI/2)); m.applyForce(PVector.fromAngle((-PI/2))); break;
-          case LEFT:println("L",(PI)); m.applyForce(PVector.fromAngle((PI))); break;
-          case DOWN: println("D",(PI/2));m.applyForce(PVector.fromAngle((PI/2))); break;
-          case RIGHT:println("R",(0)); m.applyForce(PVector.fromAngle((0))); break;
-       }
-}*/
+int cnt=0,period=20;
+int rn1=0,rn2=0;
+PVector app;
+boolean pressed;
+void keyPressed(){
+  pressed=true;
+  //println(pressed);
+}
+void keyReleased(){
+   pressed=false;
+  //println(pressed);
+}
 void draw() {
   background(0);
   pushStyle();
@@ -37,11 +48,10 @@ void draw() {
   stroke(color(255,122,255));
   rect(width/2,height/2,height/6,height/6);
   shape(c1);
-  
   shape(c2);
   popStyle();
-    
-    if(keyPressed && key==CODED)
+    //println(keyPressed);
+    if(keyPressed)
     {
        switch(keyCode)
        {
@@ -60,7 +70,27 @@ void draw() {
 
     m.applyForce(friction);
     }
+    if(cnt==0){
+      rn1=lst[int(random(11))];
+      for(int i=0;i<4;i++)
+      {
+          if(((rn1>>i)&1)==1)
+          {
+            app=f[i].copy();
+            app.mult(1+rn1/4);
+            m.applyForce(app);
+          }
+      }
+      c1.setFill(cl3);
+      c2.setFill(cl3);
+    }
+    else{
+      app.mult(0);
+      if(rn1%3==0)c1.setFill(cl1);
+      if(rn1%3==1)c2.setFill(cl2);
+    }
     m.update();
     m.display();
     m.checkEdges();
+    cnt=(cnt+1)%period;   
 }
