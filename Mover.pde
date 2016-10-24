@@ -23,6 +23,7 @@ class Mover {
   
   void update() {
     velocity.add(acceleration);
+    velocity.limit(5);
     location.add(velocity);
     acceleration.mult(0);
   }
@@ -38,11 +39,11 @@ class Mover {
 
   void checkEdges() {
 
-    if (location.x > width-height/15) {
-      location.x = width-height/15;
+    if (location.x > width-2*height/15) {
+      location.x = width-2*height/15;
       velocity.x *= -1;
-    } else if (location.x < 0) {
-      location.x = 0;
+    } else if (location.x < 2*height/15) {
+      location.x = 2*height/15;
       velocity.x *= -1;
     }
 
