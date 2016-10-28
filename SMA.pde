@@ -5,15 +5,9 @@
 Mover m;
 float r1,r2;
 PShape c1,c2;
-//PVector[] f=new PVector[4];
-PVector f;
-//int [] lst={1,2,3,4,5,6,7,8,9,10,12};
+PVector[] f=new PVector[4];
+int [] lst={1,2,3,4,5,6,7,8,9,10,12};
 color cl1=color(255,0,0),cl2=color(255,255,0),cl3=color(0,0,0);
-boolean hack=false;
-void keyPressed(){
-  if(key=='h')
-    hack=true;
-}
 void setup() {
   size(375, 667);
   rectMode(CENTER);
@@ -26,22 +20,35 @@ void setup() {
   c2 = createShape(ELLIPSE,height/15,height/2,height/15,height/15);
   c2.setFill(cl3);
   c2.setStroke(cl2);
-  f=PVector.random2D();
-  //f[0]=PVector.fromAngle(-PI/2);
-  //f[1]=PVector.fromAngle(PI);
-  //f[2]=PVector.fromAngle(PI/2);
-  //f[3]=PVector.fromAngle(0);
+  
+  f[0]=PVector.fromAngle(PI);
+  f[1]=PVector.fromAngle(-PI/2);
+  f[2]=PVector.fromAngle(0);
+  f[3]=PVector.fromAngle(PI/2);
 }
 int cnt=0,period=20;
 int rn1=0,rn2=0;
 PVector app;
 boolean pressed;
-
-void keyReleased(){
-   if(key=='h')
-     hack=false;
+void keyPressed(){
+  pressed=true;
   //println(pressed);
 }
+int token=0,token2[]={0,0,0,0};
+PVector base=new PVector(0,0);
+void keyReleased(){
+  pressed=false;
+    println("asdas");
+    float c = -0.05;
+    token=0;
+    for(int i=0;i<4;i++)token2[i]=0;
+    PVector friction = m.velocity.copy(); 
+    friction.normalize();
+    friction.mult(c);
+    base.mult(0);
+
+    m.applyForce(friction);
+  }
 void draw() {
   background(0);
   pushStyle();
@@ -57,34 +64,34 @@ void draw() {
     //println(keyPressed);
     if(keyPressed)
     {
-       switch(keyCode)
+       token=keyCode-LEFT;
+       //println(token);
+       if(token<4 && token>=0)
        {
-          case UP: m.applyForce(PVector.fromAngle((-PI/2))); break;
-          case LEFT:m.applyForce(PVector.fromAngle((PI))); break;
-          case DOWN:m.applyForce(PVector.fromAngle((PI/2))); break;
-          case RIGHT:m.applyForce(PVector.fromAngle((0))); break;
-          default:break;
+          token2[token]=1;
+          for(int i=0;i<4;i++)
+          {
+            println(token2);
+            if(token2[i]==1)
+              base.add(f[i]);
+          }
+          m.applyForce(base);
        }
     }
     else{
-      float c = -0.05;
-    PVector friction = m.velocity.copy(); 
-    friction.normalize();
-    friction.mult(c);
-
-    m.applyForce(friction);
+    
     }
     if(cnt==0){
-      /*rn1=lst[int(random(11))];
+      rn1=lst[int(random(11))];
       for(int i=0;i<4;i++)
       {
           if(((rn1>>i)&1)==1)
           {
             app=f[i].copy();
             app.mult(1+rn1/4);
-            m.applyForce(app);
+            //m.applyForce(app);
           }
-      }*/
+      }
       c1.setFill(cl3);
       c2.setFill(cl3);
     }
@@ -94,7 +101,7 @@ void draw() {
       if(rn1%3==1)c2.setFill(cl2);
     }
     m.update();
-    m.display(hack);
+    m.display();
     m.checkEdges();
     cnt=(cnt+1)%period;   
 }
