@@ -29,26 +29,27 @@ void setup() {
 int cnt=0,period=20;
 int rn1=0,rn2=0;
 PVector app;
-boolean pressed;
-void keyPressed(){
-  pressed=true;
-  //println(pressed);
-}
-int token=0,token2[]={0,0,0,0};
+//boolean pressed;
+int token=0,token2=0;
 PVector base=new PVector(0,0);
 void keyReleased(){
-  pressed=false;
-    println("asdas");
-    float c = -0.05;
-    token=0;
-    for(int i=0;i<4;i++)token2[i]=0;
-    PVector friction = m.velocity.copy(); 
-    friction.normalize();
-    friction.mult(c);
-    base.mult(0);
-
-    m.applyForce(friction);
+  //pressed=false;
+    //println("asdas");
+    if(token<4 && token>=0)
+      token=keyCode-LEFT;
+    token2&=(~(1<<token));
   }
+  
+   void keyPressed()
+    {
+       token=keyCode-LEFT;
+       //println(token);
+       if(token<4 && token>=0)
+       {
+          token2|=(1<<token);
+       }
+    }
+    float c = -0.05;
 void draw() {
   background(0);
   pushStyle();
@@ -62,25 +63,20 @@ void draw() {
   shape(c2);
   popStyle();
     //println(keyPressed);
-    if(keyPressed)
+   
+      
+    if(token2>0)
     {
-       token=keyCode-LEFT;
-       //println(token);
-       if(token<4 && token>=0)
-       {
-          token2[token]=1;
-          for(int i=0;i<4;i++)
-          {
-            println(token2);
-            if(token2[i]==1)
-              base.add(f[i]);
-          }
-          m.applyForce(base);
-       }
+      for(int i=0;i<4;i++)
+        {
+        println(token2);
+        if((token2>>i&1)==1)
+        base.add(f[i]);
+        }
     }
-    else{
-    
-    }
+    else base.mult(0);
+    m.applyForce(base);
+            
     if(cnt==0){
       rn1=lst[int(random(11))];
       for(int i=0;i<4;i++)
@@ -103,5 +99,8 @@ void draw() {
     m.update();
     m.display();
     m.checkEdges();
+    PVector friction = m.velocity.copy(); 
+    friction.setMag(c);    
+    m.applyForce(friction);
     cnt=(cnt+1)%period;   
 }
